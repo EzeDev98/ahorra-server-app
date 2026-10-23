@@ -21,8 +21,21 @@ public class GlobalExceptionHandler {
     private static final Map<Class<? extends RuntimeException>, HttpStatus> SIMPLE_STATUS_MAPPINGS = Map.ofEntries(
             Map.entry(RegistrationException.class, HttpStatus.BAD_REQUEST),
             Map.entry(UserAlreadyExistException.class, HttpStatus.CONFLICT),
+            Map.entry(RefreshTokenInvalidException.class, HttpStatus.UNAUTHORIZED),
+            Map.entry(AuthenticationException.class, HttpStatus.UNAUTHORIZED),
+            Map.entry(RequiredFieldsException.class, HttpStatus.BAD_REQUEST),
+            Map.entry(MaxAttemptExceededException.class, HttpStatus.TOO_MANY_REQUESTS),
+            Map.entry(UserNotFoundException.class, HttpStatus.NOT_FOUND),
             Map.entry(BadRequestException.class, HttpStatus.BAD_REQUEST)
     );
+
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ProblemDetail handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setProperty("code", "EMAIL_NOT_VERIFIED");
+        problem.setProperty("email", ex.getEmail());
+        return problem;
+    }
 
     @ExceptionHandler(RuntimeException.class)
     public ProblemDetail handleMappedRuntimeException(RuntimeException ex) {

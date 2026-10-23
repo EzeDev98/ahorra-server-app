@@ -1,17 +1,23 @@
 package com.ahorra.common.security;
 
+import com.ahorra.features.auth.service.impl.TokenService;
+import com.ahorra.features.session.repository.UserSessionRepository;
+import com.ahorra.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -27,6 +33,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    private final CustomAccessDenied customAccessDenied;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final UserRepository userRepository;
+    private final UserSessionRepository userSessionRepository;
+
     @Value("{app.cors.extra-origins:}")
     private List<String> extraOrigins;
 
@@ -39,6 +50,11 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/register-user"). permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/email/resend-verification"). permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/email/verify"). permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh-token"). permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login"). permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/password-reset/request"). permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/password-reset/verify-otp"). permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/password-reset/complete"). permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/keep-alive").permitAll()
                         .requestMatchers("/error").permitAll()
 
@@ -55,7 +71,12 @@ public class WebSecurityConfig {
                         .requestMatchers(maliciousProbesMatcher()).denyAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDenied))
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterAfter(new ActiveSessionFilter(userRepository, userSessionRepository), BearerTokenAuthenticationFilter.class)
                 .build();
 
     }
@@ -89,5 +110,10 @@ public class WebSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtDecoder jwtEncoder(TokenService tokenService) {
+        return tokenService.accessTokenDecoder();
     }
 }

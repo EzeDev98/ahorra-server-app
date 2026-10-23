@@ -2,6 +2,7 @@ package com.ahorra.features.emailVerification.service.impl;
 
 import com.ahorra.common.email.EmailDeliveryService;
 import com.ahorra.common.exception.BadRequestException;
+import com.ahorra.common.exception.MaxAttemptExceededException;
 import com.ahorra.features.emailVerification.dto.ResendEmailVerificationRequest;
 import com.ahorra.features.emailVerification.model.EmailVerification;
 import com.ahorra.features.emailVerification.repository.EmailVerificationRepository;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -47,11 +49,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         LocalDateTime now = LocalDateTime.now();
         List<EmailVerification> emails = emailVerificationRepository.findAllByUserIdAndUsedAtIsNull(user.getId());
 
-        boolean requestedJustNow = emails.stream()
-                .anyMatch(earlier -> earlier.getCreatedAt().plusSeconds(RESEND_COOLDOWN_SECONDS).isAfter(now));
-        if (requestedJustNow) {
-            log.info("Verification code for user {} was requested again inside the cooldown; ignored", user.getUsername());
-            return;
+        long waitSeconds = emails.stream()
+                .mapToLong(earlier -> {
+                    long remaining = Duration.between(now, earlier.getCreatedAt().plusSeconds(RESEND_COOLDOWN_SECONDS)).toMillis();
+                    return remaining > 0 ? (remaining + 999) / 1000 : 0;
+                })
+                .max()
+                .orElse(0);
+        if (waitSeconds > 0) {
+            throw new MaxAttemptExceededException("Please wait " + waitSeconds + " seconds before requesting another code");
         }
 
         emails.forEach(earlier -> earlier.setUsedAt(now));

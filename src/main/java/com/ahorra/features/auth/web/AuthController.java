@@ -1,9 +1,10 @@
-package com.ahorra.features.user.auth.web;
+package com.ahorra.features.auth.web;
 
+import com.ahorra.features.pin.service.PinService;
 import com.ahorra.features.session.service.SessionManagementSession;
-import com.ahorra.features.user.auth.dto.request.LoginRequest;
-import com.ahorra.features.user.auth.dto.response.LoginResponse;
-import com.ahorra.features.user.auth.service.AuthService;
+import com.ahorra.features.auth.dto.request.LoginRequest;
+import com.ahorra.features.auth.dto.response.LoginResponse;
+import com.ahorra.features.auth.service.AuthService;
 import com.ahorra.features.user.model.User;
 import com.ahorra.features.user.service.impl.CurrentUserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class AuthController {
     private final JwtDecoder jwtDecoder;
     private final CurrentUserService currentUserService;
     private final SessionManagementSession sessionManagementSession;
+    private final PinService pinService;
 
     @PostMapping("/auth/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
@@ -37,6 +39,7 @@ public class AuthController {
             User user = currentUserService.resolveUser(jwt);
             loginResponse.setFirstName(user.getFirstName());
             sessionManagementSession.createSession(user.getId(), loginResponse.getAccessToken());
+            pinService.markFreshLogin(user.getId());
         } catch (Exception ex) {
             log.warn("Could not resolve local user for new login; Local session not opened", ex);
         }

@@ -1,7 +1,7 @@
 package com.ahorra.features.user.utility;
 
 import com.ahorra.common.exception.RegistrationException;
-import com.ahorra.features.user.auth.dto.request.RegistrationRequest;
+import com.ahorra.features.auth.dto.request.RegistrationRequest;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

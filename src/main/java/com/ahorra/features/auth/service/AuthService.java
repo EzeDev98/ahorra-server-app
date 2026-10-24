@@ -1,6 +1,6 @@
-package com.ahorra.features.user.auth.service;
+package com.ahorra.features.auth.service;
 
-import com.ahorra.features.user.auth.dto.response.LoginResponse;
+import com.ahorra.features.auth.dto.response.LoginResponse;
 
 public interface AuthService {
     LoginResponse login(String username, String password);

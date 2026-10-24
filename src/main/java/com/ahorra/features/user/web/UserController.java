@@ -1,7 +1,7 @@
 package com.ahorra.features.user.web;
 
-import com.ahorra.features.user.auth.dto.request.RegistrationRequest;
-import com.ahorra.features.user.auth.dto.response.UserRegistrationResponse;
+import com.ahorra.features.auth.dto.request.RegistrationRequest;
+import com.ahorra.features.auth.dto.response.UserRegistrationResponse;
 import com.ahorra.features.user.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

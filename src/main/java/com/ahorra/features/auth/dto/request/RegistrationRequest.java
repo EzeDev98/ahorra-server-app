@@ -1,4 +1,4 @@
-package com.ahorra.features.user.auth.dto.request;
+package com.ahorra.features.auth.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

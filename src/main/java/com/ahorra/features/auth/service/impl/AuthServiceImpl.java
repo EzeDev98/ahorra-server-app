@@ -1,12 +1,11 @@
-package com.ahorra.features.user.auth.service.impl;
+package com.ahorra.features.auth.service.impl;
 
 import com.ahorra.common.exception.AuthenticationException;
 import com.ahorra.common.exception.EmailNotVerifiedException;
 import com.ahorra.common.exception.RefreshTokenInvalidException;
 import com.ahorra.common.exception.RequiredFieldsException;
-import com.ahorra.features.auth.service.impl.TokenService;
-import com.ahorra.features.user.auth.dto.response.LoginResponse;
-import com.ahorra.features.user.auth.service.AuthService;
+import com.ahorra.features.auth.dto.response.LoginResponse;
+import com.ahorra.features.auth.service.AuthService;
 import com.ahorra.features.user.enums.UserStatus;
 import com.ahorra.features.user.model.User;
 import com.ahorra.features.user.repository.UserRepository;

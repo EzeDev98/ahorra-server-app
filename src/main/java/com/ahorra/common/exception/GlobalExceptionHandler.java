@@ -1,5 +1,6 @@
 package com.ahorra.common.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,8 @@ public class GlobalExceptionHandler {
             Map.entry(RequiredFieldsException.class, HttpStatus.BAD_REQUEST),
             Map.entry(MaxAttemptExceededException.class, HttpStatus.TOO_MANY_REQUESTS),
             Map.entry(UserNotFoundException.class, HttpStatus.NOT_FOUND),
-            Map.entry(BadRequestException.class, HttpStatus.BAD_REQUEST)
+            Map.entry(BadRequestException.class, HttpStatus.BAD_REQUEST),
+            Map.entry(EntityNotFoundException.class, HttpStatus.NOT_FOUND)
     );
 
     @ExceptionHandler(EmailNotVerifiedException.class)
@@ -34,6 +36,20 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
         problem.setProperty("code", "EMAIL_NOT_VERIFIED");
         problem.setProperty("email", ex.getEmail());
+        return problem;
+    }
+
+    @ExceptionHandler(IncorrectPinException.class)
+    public ProblemDetail handleIncorrectPinException(IncorrectPinException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setProperty("attemptsRemaining", ex.getAttemptsRemaining());
+        return problem;
+    }
+
+    @ExceptionHandler(PinLockedException.class)
+    public ProblemDetail handlePinLockedException(PinLockedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage());
+        problem.setProperty("retryAfterSeconds", ex.getRetryAfterSeconds());
         return problem;
     }
 

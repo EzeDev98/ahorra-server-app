@@ -1,5 +1,6 @@
 package com.ahorra.common.constants;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 
 public class GeneralConstants {
@@ -11,6 +12,12 @@ public class GeneralConstants {
     public static final String ADMIN_ACTION = "ADMIN_ACTION";
     public static final int RESET_PASSWORD_RATE_LIMIT_DURATION = 24;
     public static final int MAX_RESET_PASSWORD_REQUEST = 5;
+    public static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000000");
+    public static final int MAX_CUSTOM_PERIOD_DAYS = 366;
+    public static final int PIN_LENGTH = 6;
+    public static final int MAX_PIN_ATTEMPTS = 5;
+    public static final int PIN_LOCK_MINUTES = 15;
+    public static final int PIN_RESET_WINDOW_MINUTES =  10;
 
     private GeneralConstants() {
         throw new UnsupportedOperationException("General constant class cannot be instantiated");

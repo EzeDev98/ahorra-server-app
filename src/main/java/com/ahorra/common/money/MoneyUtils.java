@@ -22,4 +22,12 @@ public class MoneyUtils {
     public static boolean isLessThan(BigDecimal amount1, BigDecimal amount2) {
         return normalize(amount1).compareTo(normalize(amount2)) < 0;
     }
+
+    public static boolean equals(BigDecimal amount1, BigDecimal amount2) {
+        return normalize(amount1).compareTo(normalize(amount2)) == 0;
+    }
+
+    public static BigDecimal add(BigDecimal amount1, BigDecimal amount2) {
+        return normalize(amount1).add(normalize(amount2));
+    }
 }

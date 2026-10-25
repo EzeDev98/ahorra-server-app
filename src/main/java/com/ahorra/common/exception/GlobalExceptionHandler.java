@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
             Map.entry(MaxAttemptExceededException.class, HttpStatus.TOO_MANY_REQUESTS),
             Map.entry(UserNotFoundException.class, HttpStatus.NOT_FOUND),
             Map.entry(BadRequestException.class, HttpStatus.BAD_REQUEST),
+            Map.entry(InternalServerErrorException.class, HttpStatus.INTERNAL_SERVER_ERROR),
             Map.entry(EntityNotFoundException.class, HttpStatus.NOT_FOUND)
     );
 

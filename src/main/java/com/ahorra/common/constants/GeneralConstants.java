@@ -18,6 +18,13 @@ public class GeneralConstants {
     public static final int MAX_PIN_ATTEMPTS = 5;
     public static final int PIN_LOCK_MINUTES = 15;
     public static final int PIN_RESET_WINDOW_MINUTES =  10;
+    public static final String TOOL_NAME = "record_entry";
+    public static final int MAX_TEXT_LENGTH = 2000;
+    public static final int MAX_CLIENT_REQUEST_ID_LENGTH = 100;
+    public static final int MAX_VENDOR_LENGTH = 255;
+    public static final BigDecimal MAX_TOTAL = new BigDecimal("1000000000000");
+    public static final int MAX_ITEMS = 50;
+    public static final int MAX_DESCRIPTION_LENGTH = 255;
 
     private GeneralConstants() {
         throw new UnsupportedOperationException("General constant class cannot be instantiated");

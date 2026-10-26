@@ -25,6 +25,7 @@ public class GeneralConstants {
     public static final BigDecimal MAX_TOTAL = new BigDecimal("1000000000000");
     public static final int MAX_ITEMS = 50;
     public static final int MAX_DESCRIPTION_LENGTH = 255;
+    public static final int MAX_VOICE_BYTES = 2 * 1024 * 1024;
 
     private GeneralConstants() {
         throw new UnsupportedOperationException("General constant class cannot be instantiated");

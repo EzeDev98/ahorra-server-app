@@ -56,32 +56,20 @@ public class ParsedEntryValidator {
 
     }
 
-    private List<ParsedItem> validateItems(List<ParsedItem> items) {
+    public List<ParsedItem> validateItems(List<ParsedItem> items) {
 
         if (items == null || items.isEmpty()) {
             throw new BadRequestException("No amounts were found in that entry");
         }
 
         if (items.size() > MAX_ITEMS) {
-            throw new BadRequestException("No amount were found in tha entry");
+            throw new BadRequestException("Too many items in one entry");
         }
 
         List<ParsedItem> clean = new ArrayList<>();
         for (ParsedItem item : items) {
             String description = item.description();
-            BigDecimal amount = item.amount();
-            if (description == null || description.isBlank()) {
-                throw new BadRequestException("Every item needs a description");
-            }
-
-            if (amount == null || amount.stripTrailingZeros().scale() > MONETARY_SCALE) {
-                throw new BadRequestException("Could not read an amount for: " + description);
-            }
-
-            BigDecimal normalizedAmount = MoneyUtils.normalize(amount);
-            if (!MoneyUtils.isPositive(normalizedAmount) || normalizedAmount.compareTo(MAX_AMOUNT) >= 0) {
-                throw new BadRequestException("Invalid amount for: " + description);
-            }
+            BigDecimal normalizedAmount = getAmount(item, description);
 
             String trimmedDescription = description.trim();
             if (trimmedDescription.length() > MAX_DESCRIPTION_LENGTH) {
@@ -91,6 +79,23 @@ public class ParsedEntryValidator {
         }
 
         return clean;
+    }
+
+    private static BigDecimal getAmount(ParsedItem item, String description) {
+        BigDecimal amount = item.amount();
+        if (description == null || description.isBlank()) {
+            throw new BadRequestException("Every item needs a description");
+        }
+
+        if (amount == null || amount.stripTrailingZeros().scale() > MONETARY_SCALE) {
+            throw new BadRequestException("Could not read an amount for: " + description);
+        }
+
+        BigDecimal normalizedAmount = MoneyUtils.normalize(amount);
+        if (!MoneyUtils.isPositive(normalizedAmount) || normalizedAmount.compareTo(MAX_AMOUNT) >= 0) {
+            throw new BadRequestException("Invalid amount for: " + description);
+        }
+        return normalizedAmount;
     }
 
     private LocalDate resolveDate(String value, LocalDate today) {

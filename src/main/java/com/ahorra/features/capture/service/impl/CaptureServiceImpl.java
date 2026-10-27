@@ -24,6 +24,7 @@ import com.ahorra.features.capture.parser.ParsedEntryValidator;
 import com.ahorra.features.capture.repository.PendingEntryRepository;
 import com.ahorra.features.capture.repository.RawEntryRepository;
 import com.ahorra.features.capture.service.CaptureService;
+import com.ahorra.features.day.service.DayGateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -45,6 +46,7 @@ public class CaptureServiceImpl implements CaptureService {
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
     private final LookupCacheService  lookupCacheService;
+    private final DayGateService dayGateService;
     private final EntryParser entryParser;
     private final ParsedEntryValidator validator;
     private final ZoneId zone;
@@ -55,7 +57,7 @@ public class CaptureServiceImpl implements CaptureService {
                               PendingEntryRepository pendingEntryRepository,
                               AccountRepository accountRepository,
                               CategoryRepository categoryRepository,
-                              LookupCacheService lookupCacheService,
+                              LookupCacheService lookupCacheService, DayGateService dayGateService,
                               EntryParser entryParser,
                               ParsedEntryValidator validator,
                               @Value("${app.timezone:Africa/Lagos}") String timezone) {
@@ -64,6 +66,7 @@ public class CaptureServiceImpl implements CaptureService {
         this.accountRepository = accountRepository;
         this.categoryRepository = categoryRepository;
         this.lookupCacheService = lookupCacheService;
+        this.dayGateService = dayGateService;
         this.entryParser = entryParser;
         this.validator = validator;
         this.zone = ZoneId.of(timezone);
@@ -71,6 +74,9 @@ public class CaptureServiceImpl implements CaptureService {
 
     @Override
     public List<PendingEntryResponse> capture(Long userId, CaptureRequest request) {
+
+        dayGateService.assertNotGated(userId);
+
         RawEntry raw = getRawEntry(userId, request);
 
         List<PendingEntry> existing = pendingEntryRepository.findAllByRawEntryIdOrderByIdAsc(raw.getId());

@@ -4,6 +4,7 @@ import com.ahorra.common.exception.BadRequestException;
 import com.ahorra.features.capture.dto.response.TranscriptResponse;
 import com.ahorra.features.capture.service.VoiceTranscriptService;
 import com.ahorra.features.capture.transcription.TranscriptionService;
+import com.ahorra.features.day.service.DayGateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import static com.ahorra.common.constants.GeneralConstants.MAX_VOICE_BYTES;
 @Service
 public class VoiceTranscriptServiceImpl implements VoiceTranscriptService {
 
+    private final DayGateService dayGateService;
     private final TranscriptionService transcriptionService;
 
     @Override
@@ -37,6 +39,8 @@ public class VoiceTranscriptServiceImpl implements VoiceTranscriptService {
         if (!contentType.startsWith("audio/") && !contentType.startsWith("video/webm") && !contentType.startsWith("video/mp4")) {
             throw new BadRequestException("That file is not a voice recording");
         }
+
+        dayGateService.assertNotGated(userId);
 
         byte[] bytes;
 

@@ -29,7 +29,8 @@ public class GlobalExceptionHandler {
             Map.entry(UserNotFoundException.class, HttpStatus.NOT_FOUND),
             Map.entry(BadRequestException.class, HttpStatus.BAD_REQUEST),
             Map.entry(InternalServerErrorException.class, HttpStatus.INTERNAL_SERVER_ERROR),
-            Map.entry(EntityNotFoundException.class, HttpStatus.NOT_FOUND)
+            Map.entry(EntityNotFoundException.class, HttpStatus.NOT_FOUND),
+            Map.entry(DayGatedException.class, HttpStatus.LOCKED)
     );
 
     @ExceptionHandler(EmailNotVerifiedException.class)

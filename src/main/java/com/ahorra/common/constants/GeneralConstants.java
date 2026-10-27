@@ -27,6 +27,14 @@ public class GeneralConstants {
     public static final int MAX_DESCRIPTION_LENGTH = 255;
     public static final int MAX_VOICE_BYTES = 2 * 1024 * 1024;
 
+    public static final BigDecimal HUNDRED = new BigDecimal("100");
+    public static final String UNCATEGORIZED = "Uncategorized";
+    public static final String NO_ENTRIES_SUMMARY = "No entries logged today";
+    public static final int OBSERVATION_DAYS = 30;
+    public static final int MAX_BACKFILL_DAYS = 14;
+    public static final int MAX_INSIGHT_LENGTH = 500;
+
+
     private GeneralConstants() {
         throw new UnsupportedOperationException("General constant class cannot be instantiated");
     }

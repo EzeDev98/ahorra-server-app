@@ -12,7 +12,6 @@ import com.ahorra.features.income.service.IncomeService;
 import com.ahorra.features.user.model.User;
 import com.ahorra.features.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -66,7 +65,7 @@ public class IncomeServiceImpl implements IncomeService {
         if (current.isPresent() && createdToday(current.get(), today)) {
             IncomeHistory record = current.get();
             record.setMinAmount(candidate.getMinAmount());
-            record.setMinAmount(candidate.getMaxAmount());
+            record.setMaxAmount(candidate.getMaxAmount());
             record.setPeriodType(candidate.getPeriodType());
             record.setPeriodLength(candidate.getPeriodLength());
             return toResponse(incomeHistoryRepository.save(record));
@@ -127,6 +126,10 @@ public class IncomeServiceImpl implements IncomeService {
         if (MoneyUtils.isLessThan(max, min)) {
             throw new BadRequestException("Maximum income cannot be less than the minimum");
         }
+        return getIncomeHistory(request, max, min);
+    }
+
+    private static IncomeHistory getIncomeHistory(IncomeRequest request, BigDecimal max, BigDecimal min) {
         if (max.compareTo(MAX_AMOUNT) >= 0) {
             throw new BadRequestException("Income amount is too large");
         }

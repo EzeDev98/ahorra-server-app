@@ -23,6 +23,8 @@ import com.ahorra.features.capture.model.PendingEntryItem;
 import com.ahorra.features.capture.parser.ParsedEntryValidator;
 import com.ahorra.features.capture.repository.PendingEntryRepository;
 import com.ahorra.features.capture.service.PendingEntryService;
+import com.ahorra.features.day.service.DayCloseService;
+import com.ahorra.features.day.service.DayGateService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +52,7 @@ public class PendingEntryServiceImpl implements PendingEntryService {
     private final LedgerService ledgerService;
     private final ParsedEntryValidator parsedEntryValidator;
     private final PendingEntryMapper pendingEntryMapper;
+    private final DayCloseService dayCloseService;
     private final ZoneId zone;
 
     public PendingEntryServiceImpl(PendingEntryRepository pendingEntryRepository,
@@ -58,7 +61,7 @@ public class PendingEntryServiceImpl implements PendingEntryService {
                                    SystemAccountService systemAccountService,
                                    LedgerService ledgerService,
                                    ParsedEntryValidator parsedEntryValidator,
-                                   PendingEntryMapper pendingEntryMapper,
+                                   PendingEntryMapper pendingEntryMapper, DayCloseService dayCloseService,
                                    @Value("${app.timeZone:Africa/Lagos}") String timeZone) {
         this.pendingEntryRepository = pendingEntryRepository;
         this.accountRepository = accountRepository;
@@ -67,6 +70,7 @@ public class PendingEntryServiceImpl implements PendingEntryService {
         this.ledgerService = ledgerService;
         this.parsedEntryValidator = parsedEntryValidator;
         this.pendingEntryMapper = pendingEntryMapper;
+        this.dayCloseService = dayCloseService;
         this.zone = ZoneId.of(timeZone);
     }
 
@@ -95,9 +99,15 @@ public class PendingEntryServiceImpl implements PendingEntryService {
             applyEdits(userId, pendingEntry, request);
         }
 
+        if (dayCloseService.isClosed(userId, pendingEntry.getEntryDate())) {
+            throw new BadRequestException("That day is already closed. Change the entry's date to confirm it.");
+        }
+
         LedgerEntry ledgerEntry = ledgerService.postEntry(buildPostRequest(userId, pendingEntry));
         pendingEntry.markPosted(ledgerEntry.getId(), edited);
         PendingEntry savedEntry = pendingEntryRepository.save(pendingEntry);
+
+        dayCloseService.catchup(userId, LocalDate.now(zone).minusDays(1));
 
         log.info("Pending entry {} posted as ledger entry {} for user {}", pendingEntry.getId(), ledgerEntry.getId(), userId);
         return pendingEntryMapper.toResponse(savedEntry);
@@ -138,8 +148,8 @@ public class PendingEntryServiceImpl implements PendingEntryService {
             throw new BadRequestException("Only discarded entry can be restored");
         }
 
-        LocalDate entryDate = pendingEntry.getEntryDate();
-        pendingEntry.restore(entryDate);
+        LocalDate date = dayCloseService.isClosed(userId, pendingEntry.getEntryDate()) ? LocalDate.now(zone) : pendingEntry.getEntryDate();
+        pendingEntry.restore(date);
         pendingEntryRepository.save(pendingEntry);
 
         log.info("Pending entry {} restored for user {}", pendingEntry.getId(), userId);

@@ -17,7 +17,7 @@ public interface DayStateRepository extends JpaRepository<DayState, Long> {
     List<DayState> findAllByUserIdAndStatusAndDayDateBetweenOrderByDayDateAsc(Long userId, DayStatus status, LocalDate from, LocalDate to);
 
     @Query("""
-            select status.dayDate from DayState status where status.userId = :userId and status.status = :status and not exists (select 1 from dailyReport report
+            select status.dayDate from DayState status where status.userId = :userId and status.status = :status and not exists (select 1 from DailyReport report
             where report.userId = status.userId and report.reportDate = status.dayDate) order by status.dayDate asc""")
-    List<LocalDate> findDaysWithoutReport(@Param("userId") Long userId, @Param("status") DayStatus status);
+    List<LocalDate> findDaysWithoutDailyReport(@Param("userId") Long userId, @Param("status") DayStatus status);
 }

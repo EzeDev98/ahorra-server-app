@@ -95,12 +95,12 @@ public class DailyReport {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "dailyReport", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("scope ASC, position ASC")
     private List<DailyReportCategory> categories = new ArrayList<>();
 
     public void addCategory(DailyReportCategory category) {
-        category.setReport(this);
+        category.setDailyReport(this);
         categories.add(category);
     }
 }

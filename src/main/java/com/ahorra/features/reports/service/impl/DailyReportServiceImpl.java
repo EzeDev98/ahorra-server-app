@@ -81,7 +81,7 @@ public class DailyReportServiceImpl implements DailyReportService {
 
     @Override
     public void generateMissing(Long userId) {
-        List<LocalDate> days = dayStateRepository.findDaysWithoutReport(userId, DayStatus.CLOSED);
+        List<LocalDate> days = dayStateRepository.findDaysWithoutDailyReport(userId, DayStatus.CLOSED);
         for (LocalDate day : days.stream().limit(MAX_BACKFILL_DAYS).toList()) {
             try {
                 generateIfMissing(userId, day);

@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LedgerEntryRepository extends JpaRepository<LedgerEntry, Long> {
+
     Optional<LedgerEntry> findByIdAndUserId(Long id, Long userId);
     List<LedgerEntry> findAllByUserIdAndEntryDate(Long userId, LocalDate entryDate);
+
     long countByUserIdAndEntryDate(Long userId, LocalDate entryDate);
 
     @Query("""
-            select new com.ahorra.feature.day.dto.DaySpend(e.entryDate, sum(t.amount))
+            select new com.ahorra.features.day.dto.request.DaySpend(e.entryDate, sum(t.amount))
             from TransactionEntry t join t.ledgerEntry e
             where e.userId = :userId
               and e.entryDate between :from and :to
@@ -34,7 +36,7 @@ public interface LedgerEntryRepository extends JpaRepository<LedgerEntry, Long> 
                                  @Param("to") LocalDate to);
 
     @Query("""
-            select new com.ahorra.feature.income.dto.CategorySpendRow(e.categoryId, sum(t.amount))
+            select new com.ahorra.features.income.dto.request.CategorySpendRow(e.categoryId, sum(t.amount))
             from TransactionEntry t join t.ledgerEntry e
             where e.userId = :userId
               and e.entryDate between :from and :to

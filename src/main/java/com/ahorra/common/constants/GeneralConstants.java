@@ -34,6 +34,15 @@ public class GeneralConstants {
     public static final int MAX_BACKFILL_DAYS = 14;
     public static final int MAX_INSIGHT_LENGTH = 500;
 
+    public static final int[] WINDOWS = {7, 30, 90};
+    public static final int MAX_WINDOW = 90;
+    public static final int HABIT_WINDOW = 56;
+    public static final int JUDGMENT_DAYS = 30;
+    public static final int LOOKBACK_DAYS = 90;
+    public static final double UNUSUAL_Z = 2.0;
+    public static final String ALL_SPENDING = "All spending";
+
+
 
     private GeneralConstants() {
         throw new UnsupportedOperationException("General constant class cannot be instantiated");

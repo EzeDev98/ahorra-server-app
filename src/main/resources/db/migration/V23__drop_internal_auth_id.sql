@@ -1,0 +1,1 @@
+ALTER TABLE users DROP COLUMN internal_auth_id;

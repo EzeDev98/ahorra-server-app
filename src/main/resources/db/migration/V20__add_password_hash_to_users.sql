@@ -1,0 +1,3 @@
+ALTER TABLE users ADD COLUMN password_hash VARCHAR(255);
+
+ALTER TABLE users ALTER COLUMN internal_auth_id DROP NOT NULL;

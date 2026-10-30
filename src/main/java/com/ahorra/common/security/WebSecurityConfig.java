@@ -92,7 +92,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        List<String> origins = new ArrayList<>(List.of("http://localhost:*"));
+        List<String> origins = new ArrayList<>(List.of("https://*.onrender.com", "http://localhost:*"));
 
         extraOrigins.stream().map(String::trim).filter(origin -> !origin.isEmpty()).forEach(origins::add);
         configuration.setAllowedOriginPatterns(origins);

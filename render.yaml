@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: ahorra-server
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/keep-alive
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: APP_TITLE
+        value: /api/v1
+      - key: APP_TIMEZONE
+        value: Africa/Lagos
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: ahorra-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: ahorra-redis
+          property: port
+      - key: BASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: POSTGRES_URL
+        sync: false
+      - key: POSTGRES_DB
+        sync: false
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MAILJET_API_KEY
+        sync: false
+      - key: MAILJET_SECRET_KEY
+        sync: false
+      - key: MAILJET_SENDER_EMAIL
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+
+  - type: keyvalue
+    name: ahorra-redis
+    plan: free
+    region: frankfurt
+    maxmemoryPolicy: noeviction
+    ipAllowList: []

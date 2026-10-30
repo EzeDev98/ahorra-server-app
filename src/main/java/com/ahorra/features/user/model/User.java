@@ -1,5 +1,6 @@
 package com.ahorra.features.user.model;
 
+import com.ahorra.features.user.enums.ThemeMode;
 import com.ahorra.features.user.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus userStatus;
+
+    @Column(name = "reminder_enabled", nullable = false)
+    private boolean reminderEnabled;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "theme", length = 10)
+    private ThemeMode theme;
 
     @Column(name = "date_of_birth")
     private String dateOfBirth;

@@ -41,6 +41,7 @@ public class GeneralConstants {
     public static final int LOOKBACK_DAYS = 90;
     public static final double UNUSUAL_Z = 2.0;
     public static final String ALL_SPENDING = "All spending";
+    public static final int MAX_PUSH_DEVICES = 10;
 
 
 

@@ -43,7 +43,7 @@ public class BehaviorBaseline {
     @Column(name = "mean_amount", nullable = false, precision = MONETARY_PRECISION, scale = MONETARY_SCALE)
     private BigDecimal meanAmount;
 
-    @Column(name = "stv_dev", nullable = false, precision = MONETARY_PRECISION, scale = MONETARY_SCALE)
+    @Column(name = "std_dev", nullable = false, precision = MONETARY_PRECISION, scale = MONETARY_SCALE)
     private BigDecimal stdDev;
 
     @Column(name = "sample_days", nullable = false)
